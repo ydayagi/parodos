@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-jar
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: copy-to-pvc
+spec:
+  volumes:
+    - name: user-jar
+      persistentVolumeClaim:
+        claimName: user-jar
+  containers:
+    - command: ['sh', '-c', 'cp /workflow-examples.jar /usr/share/user-jar/user.jar; while true; do sleep 10; echo here; done']
+      image: quay.io/parodos-dev/workflow-examples:test
+      volumeMounts:
+        - mountPath: "/usr/share/user-jar"
+          name: user-jar
+      name: c1

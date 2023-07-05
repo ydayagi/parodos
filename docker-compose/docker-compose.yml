@@ -21,3 +21,9 @@ services:
       - SPRING_PROFILES_ACTIVE=local
     depends_on:
       - notification-service
+
+  workflow-examples:
+    build:
+      context: ../
+      dockerfile: ./workflow-examples/Dockerfile
+    container_name: workflow-examples

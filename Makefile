@@ -158,8 +158,10 @@ push-images: ## Push docker images to quay.io registry
 push-images-to-kind: ## Push docker images to kind
 	$(DOCKER) tag docker-compose_workflow-service:latest $(ORG)$(WORKFLOW_SERVICE_IMAGE):test
 	$(DOCKER) tag docker-compose_notification-service:latest $(ORG)$(NOTIFICATION_SERVICE_IMAGE):test
+	$(DOCKER) tag docker-compose_workflow-examples:latest $(ORG)workflow-examples:test
 	kind load docker-image $(ORG)$(WORKFLOW_SERVICE_IMAGE):test
 	kind load docker-image $(ORG)$(NOTIFICATION_SERVICE_IMAGE):test
+	kind load docker-image $(ORG)workflow-examples:test
 
 install-nginx: ## Install nginx
 	kubectl label node kind-control-plane  "ingress-ready=true" || exit 0

@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - main
+      - fpath510
       - ActionsTest
       - 'releases/**'
 
@@ -118,6 +118,11 @@ jobs:
         with:
           image: "docker-compose_notification-service:latest"
 
+      - name: Upload image
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: "docker-compose_workflow-examples:latest"
+
       - name: "finished"
         id: container-finished
         run: echo 1
@@ -175,9 +180,23 @@ jobs:
         with:
           image: "docker-compose_workflow-service:latest"
 
+      - name: Download images
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: "docker-compose_workflow-examples:latest"
+
       - name: Load images inside kind
         run: |
           make push-images-to-kind
+
+      - name: Copy workflow-examples to PVC
+        run: |
+          kubectl create -f hack/manifests/testing/copy-to-pvc.yaml
+          kubectl wait --timeout=60s --for=condition=Ready pods copy-to-pvc || {
+            echo "Timeout waiting for copy-to-pvc to be ready";
+            kubectl logs copy-to-pvc;
+            exit 1;
+          }
 
       - name: Deploy
         run: |
@@ -185,6 +204,7 @@ jobs:
           kubectl wait --timeout=600s --for=condition=Ready pods --all -n default || {
             echo "Timeout waiting for Parodos services to be ready";
             kubectl get pods --all-namespaces;
+            kubectl describe pods
             echo "************ workflow-service logs ***************";
             kubectl logs -l app=workflow-service --tail=40;
             echo "************ notification-service logs ***************";

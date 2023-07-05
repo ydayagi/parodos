@@ -43,12 +43,19 @@ spec:
       labels:
         app: workflow-service
     spec:
+      volumes:
+        - name: user-jar
+          persistentVolumeClaim:
+            claimName: user-jar
       containers:
       - name: workflow-service
         image: quay.io/parodos-dev/workflow-service:main
         imagePullPolicy: Always
         ports:
           - containerPort: 8080
+        env:
+          - name: "LOADER_PATH"
+            value: "/usr/share/user-jar/user.jar"
         envFrom:
           - configMapRef:
               name: workflow-service-config
@@ -62,3 +69,6 @@ spec:
             port: 8080
           initialDelaySeconds: 25
           timeoutSeconds: 4
+        volumeMounts:
+          - mountPath: "/usr/share/user-jar"
+            name: user-jar
