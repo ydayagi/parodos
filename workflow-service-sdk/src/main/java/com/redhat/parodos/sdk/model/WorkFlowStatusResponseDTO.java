@@ -37,8 +37,13 @@ import com.redhat.parodos.sdk.invoker.JSON;
 /**
  * WorkFlowStatusResponseDTO
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class WorkFlowStatusResponseDTO {
+
+	public static final String SERIALIZED_NAME_FALLBACK_EXECUTION_ID = "fallbackExecutionId";
+
+	@SerializedName(SERIALIZED_NAME_FALLBACK_EXECUTION_ID)
+	private UUID fallbackExecutionId;
 
 	public static final String SERIALIZED_NAME_MESSAGE = "message";
 
@@ -135,6 +140,25 @@ public class WorkFlowStatusResponseDTO {
 	public WorkFlowStatusResponseDTO() {
 	}
 
+	public WorkFlowStatusResponseDTO fallbackExecutionId(UUID fallbackExecutionId) {
+
+		this.fallbackExecutionId = fallbackExecutionId;
+		return this;
+	}
+
+	/**
+	 * Get fallbackExecutionId
+	 * @return fallbackExecutionId
+	 **/
+	@jakarta.annotation.Nullable
+	public UUID getFallbackExecutionId() {
+		return fallbackExecutionId;
+	}
+
+	public void setFallbackExecutionId(UUID fallbackExecutionId) {
+		this.fallbackExecutionId = fallbackExecutionId;
+	}
+
 	public WorkFlowStatusResponseDTO message(String message) {
 
 		this.message = message;
@@ -145,7 +169,7 @@ public class WorkFlowStatusResponseDTO {
 	 * Get message
 	 * @return message
 	 **/
-	@javax.annotation.Nullable
+	@jakarta.annotation.Nullable
 	public String getMessage() {
 		return message;
 	}
@@ -164,7 +188,7 @@ public class WorkFlowStatusResponseDTO {
 	 * Get originalExecutionId
 	 * @return originalExecutionId
 	 **/
-	@javax.annotation.Nullable
+	@jakarta.annotation.Nullable
 	public UUID getOriginalExecutionId() {
 		return originalExecutionId;
 	}
@@ -183,7 +207,7 @@ public class WorkFlowStatusResponseDTO {
 	 * Get restartedCount
 	 * @return restartedCount
 	 **/
-	@javax.annotation.Nullable
+	@jakarta.annotation.Nullable
 	public Integer getRestartedCount() {
 		return restartedCount;
 	}
@@ -202,7 +226,7 @@ public class WorkFlowStatusResponseDTO {
 	 * Get status
 	 * @return status
 	 **/
-	@javax.annotation.Nullable
+	@jakarta.annotation.Nullable
 	public StatusEnum getStatus() {
 		return status;
 	}
@@ -221,7 +245,7 @@ public class WorkFlowStatusResponseDTO {
 	 * Get workFlowExecutionId
 	 * @return workFlowExecutionId
 	 **/
-	@javax.annotation.Nullable
+	@jakarta.annotation.Nullable
 	public UUID getWorkFlowExecutionId() {
 		return workFlowExecutionId;
 	}
@@ -240,7 +264,7 @@ public class WorkFlowStatusResponseDTO {
 	 * Get workFlowName
 	 * @return workFlowName
 	 **/
-	@javax.annotation.Nullable
+	@jakarta.annotation.Nullable
 	public String getWorkFlowName() {
 		return workFlowName;
 	}
@@ -267,7 +291,7 @@ public class WorkFlowStatusResponseDTO {
 	 * Get works
 	 * @return works
 	 **/
-	@javax.annotation.Nullable
+	@jakarta.annotation.Nullable
 	public List<WorkStatusResponseDTO> getWorks() {
 		return works;
 	}
@@ -285,7 +309,8 @@ public class WorkFlowStatusResponseDTO {
 			return false;
 		}
 		WorkFlowStatusResponseDTO workFlowStatusResponseDTO = (WorkFlowStatusResponseDTO) o;
-		return Objects.equals(this.message, workFlowStatusResponseDTO.message)
+		return Objects.equals(this.fallbackExecutionId, workFlowStatusResponseDTO.fallbackExecutionId)
+				&& Objects.equals(this.message, workFlowStatusResponseDTO.message)
 				&& Objects.equals(this.originalExecutionId, workFlowStatusResponseDTO.originalExecutionId)
 				&& Objects.equals(this.restartedCount, workFlowStatusResponseDTO.restartedCount)
 				&& Objects.equals(this.status, workFlowStatusResponseDTO.status)
@@ -296,14 +321,15 @@ public class WorkFlowStatusResponseDTO {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(message, originalExecutionId, restartedCount, status, workFlowExecutionId, workFlowName,
-				works);
+		return Objects.hash(fallbackExecutionId, message, originalExecutionId, restartedCount, status,
+				workFlowExecutionId, workFlowName, works);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("class WorkFlowStatusResponseDTO {\n");
+		sb.append("    fallbackExecutionId: ").append(toIndentedString(fallbackExecutionId)).append("\n");
 		sb.append("    message: ").append(toIndentedString(message)).append("\n");
 		sb.append("    originalExecutionId: ").append(toIndentedString(originalExecutionId)).append("\n");
 		sb.append("    restartedCount: ").append(toIndentedString(restartedCount)).append("\n");
@@ -333,6 +359,7 @@ public class WorkFlowStatusResponseDTO {
 	static {
 		// a set of all properties/fields (JSON key names)
 		openapiFields = new HashSet<String>();
+		openapiFields.add("fallbackExecutionId");
 		openapiFields.add("message");
 		openapiFields.add("originalExecutionId");
 		openapiFields.add("restartedCount");
@@ -374,6 +401,12 @@ public class WorkFlowStatusResponseDTO {
 						"The field `%s` in the JSON string is not defined in the `WorkFlowStatusResponseDTO` properties. JSON: %s",
 						entry.getKey(), jsonObj.toString()));
 			}
+		}
+		if ((jsonObj.get("fallbackExecutionId") != null && !jsonObj.get("fallbackExecutionId").isJsonNull())
+				&& !jsonObj.get("fallbackExecutionId").isJsonPrimitive()) {
+			throw new IllegalArgumentException(String.format(
+					"Expected the field `fallbackExecutionId` to be a primitive type in the JSON string but got `%s`",
+					jsonObj.get("fallbackExecutionId").toString()));
 		}
 		if ((jsonObj.get("message") != null && !jsonObj.get("message").isJsonNull())
 				&& !jsonObj.get("message").isJsonPrimitive()) {

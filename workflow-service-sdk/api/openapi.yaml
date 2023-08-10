@@ -1242,10 +1242,12 @@ components:
       type: object
     WorkDefinitionResponseDTO:
       example:
+        cronExpression: cronExpression
         outputs:
         - EXCEPTION
         - EXCEPTION
         processingType: SEQUENTIAL
+        workFlowCheckerMappingDefinitionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         works:
         - null
         - null
@@ -1258,6 +1260,8 @@ components:
             key: "{}"
       properties:
         author:
+          type: string
+        cronExpression:
           type: string
         id:
           format: uuid
@@ -1285,15 +1289,20 @@ components:
           - PARALLEL
           - OTHER
           type: string
+        workFlowCheckerMappingDefinitionId:
+          format: uuid
+          type: string
         workType:
           enum:
           - TASK
           - WORKFLOW
+          - CHECKER
           type: string
         works:
           items:
             $ref: '#/components/schemas/WorkDefinitionResponseDTO'
           type: array
+          uniqueItems: true
       type: object
     WorkFlowCheckerTaskRequestDTO:
       example:
@@ -1415,13 +1424,15 @@ components:
       type: object
     WorkFlowDefinitionResponseDTO:
       example:
+        cronExpression: cronExpression
         processingType: SEQUENTIAL
-        rollbackWorkflow: rollbackWorkflow
         works:
-        - outputs:
+        - cronExpression: cronExpression
+          outputs:
           - EXCEPTION
           - EXCEPTION
           processingType: SEQUENTIAL
+          workFlowCheckerMappingDefinitionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           works:
           - null
           - null
@@ -1432,10 +1443,12 @@ components:
           parameters:
             key:
               key: "{}"
-        - outputs:
+        - cronExpression: cronExpression
+          outputs:
           - EXCEPTION
           - EXCEPTION
           processingType: SEQUENTIAL
+          workFlowCheckerMappingDefinitionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           works:
           - null
           - null
@@ -1448,6 +1461,7 @@ components:
               key: "{}"
         modifyDate: 2000-01-23T04:56:07.000+00:00
         author: author
+        fallbackWorkflow: fallbackWorkflow
         name: name
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         type: ASSESSMENT
@@ -1462,6 +1476,10 @@ components:
           type: string
         createDate:
           format: date-time
+          type: string
+        cronExpression:
+          type: string
+        fallbackWorkflow:
           type: string
         id:
           format: uuid
@@ -1485,8 +1503,6 @@ components:
           type: string
         properties:
           $ref: '#/components/schemas/WorkFlowPropertiesDefinitionDTO'
-        rollbackWorkflow:
-          type: string
         type:
           enum:
           - ASSESSMENT
@@ -1498,6 +1514,7 @@ components:
           items:
             $ref: '#/components/schemas/WorkDefinitionResponseDTO'
           type: array
+          uniqueItems: true
       type: object
     WorkFlowExecutionResponseDTO:
       example:
@@ -1720,6 +1737,7 @@ components:
       type: object
     WorkFlowResponseDTO:
       example:
+        originalExecutionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         workStatus: FAILED
         additionalInfos:
         - value: value
@@ -1741,6 +1759,9 @@ components:
         endDate:
           type: string
         executeBy:
+          type: string
+        originalExecutionId:
+          format: uuid
           type: string
         projectId:
           format: uuid
@@ -1792,8 +1813,12 @@ components:
         workFlowExecutionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         restartedCount: 0
         message: message
+        fallbackExecutionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         status: FAILED
       properties:
+        fallbackExecutionId:
+          format: uuid
+          type: string
         message:
           type: string
         originalExecutionId:
@@ -1876,6 +1901,7 @@ components:
           enum:
           - TASK
           - WORKFLOW
+          - CHECKER
           type: string
         workName:
           type: string
@@ -1913,6 +1939,7 @@ components:
           enum:
           - TASK
           - WORKFLOW
+          - CHECKER
           type: string
         works:
           items:

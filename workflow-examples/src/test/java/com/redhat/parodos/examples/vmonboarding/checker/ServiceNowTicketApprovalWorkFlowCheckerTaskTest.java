@@ -9,13 +9,13 @@ import com.redhat.parodos.workflow.task.checker.BaseWorkFlowCheckerTask;
 import com.redhat.parodos.workflows.work.WorkContext;
 import com.redhat.parodos.workflows.work.WorkReport;
 import com.redhat.parodos.workflows.work.WorkStatus;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -29,24 +29,24 @@ public class ServiceNowTicketApprovalWorkFlowCheckerTaskTest extends BaseWorkFlo
 
 	private static final String USERNAME_TEST = "username-test";
 
-	public static final String PASSWORD_TEST = "password-test";
+	private static final String PASSWORD_TEST = "password-test";
 
-	public static final String INCIDENT_ID_PARAMETER_NAME = "INCIDENT_ID";
+	private static final String INCIDENT_ID_PARAMETER_NAME = "INCIDENT_ID";
 
-	public static final String INCIDENT_ID_PARAMETER_VALUE_TEST = "incident-id-test";
+	private static final String INCIDENT_ID_PARAMETER_VALUE_TEST = "incident-id-test";
 
-	public static final String SERVICE_NOW_RESPONSE_RESULT_STATE_SUCCESS_TEST = "success-test";
+	private static final String SERVICE_NOW_RESPONSE_RESULT_STATE_SUCCESS_TEST = "success-test";
 
-	public static final String SERVICE_NOW_RESPONSE_RESULT_STATE_NON_APPROVED_TEST = "1";
+	private static final String SERVICE_NOW_RESPONSE_RESULT_STATE_NON_APPROVED_TEST = "1";
 
-	public static final String SERVICE_NOW_RESPONSE_RESULT_STATE_REJECTED_TEST = "8";
+	private static final String SERVICE_NOW_RESPONSE_RESULT_STATE_REJECTED_TEST = "8";
 
 	private ServiceNowTicketApprovalWorkFlowCheckerTask serviceNowTicketApprovalWorkFlowCheckerTask;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.serviceNowTicketApprovalWorkFlowCheckerTask = spy(
-				(ServiceNowTicketApprovalWorkFlowCheckerTask) getConcretePersonImplementation());
+				(ServiceNowTicketApprovalWorkFlowCheckerTask) getTaskUnderTest());
 		try {
 			doReturn(INCIDENT_ID_PARAMETER_VALUE_TEST).when(this.serviceNowTicketApprovalWorkFlowCheckerTask)
 					.getRequiredParameterValue(eq(INCIDENT_ID_PARAMETER_NAME));
@@ -57,7 +57,7 @@ public class ServiceNowTicketApprovalWorkFlowCheckerTaskTest extends BaseWorkFlo
 	}
 
 	@Override
-	protected BaseWorkFlowCheckerTask getConcretePersonImplementation() {
+	protected BaseWorkFlowCheckerTask getTaskUnderTest() {
 		return new ServiceNowTicketApprovalWorkFlowCheckerTask(SERVICE_URL_TEST, USERNAME_TEST, PASSWORD_TEST);
 	}
 

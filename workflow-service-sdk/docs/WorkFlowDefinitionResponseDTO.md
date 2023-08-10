@@ -9,15 +9,16 @@
 |------------ | ------------- | ------------- | -------------|
 |**author** | **String** |  |  [optional] |
 |**createDate** | **Date** |  |  [optional] |
+|**cronExpression** | **String** |  |  [optional] |
+|**fallbackWorkflow** | **String** |  |  [optional] |
 |**id** | **UUID** |  |  [optional] |
 |**modifyDate** | **Date** |  |  [optional] |
 |**name** | **String** |  |  [optional] |
 |**parameters** | **Map&lt;String, Map&lt;String, Object&gt;&gt;** |  |  [optional] |
 |**processingType** | [**ProcessingTypeEnum**](#ProcessingTypeEnum) |  |  [optional] |
 |**properties** | [**WorkFlowPropertiesDefinitionDTO**](WorkFlowPropertiesDefinitionDTO.md) |  |  [optional] |
-|**rollbackWorkflow** | **String** |  |  [optional] |
 |**type** | [**TypeEnum**](#TypeEnum) |  |  [optional] |
-|**works** | [**List&lt;WorkDefinitionResponseDTO&gt;**](WorkDefinitionResponseDTO.md) |  |  [optional] |
+|**works** | [**Set&lt;WorkDefinitionResponseDTO&gt;**](WorkDefinitionResponseDTO.md) |  |  [optional] |
 
 
 

@@ -18,7 +18,7 @@ package com.redhat.parodos.tasks.project.checker;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.redhat.parodos.project.enums.ProjectAccessStatus;
+import com.redhat.parodos.tasks.project.dto.AccessStatusResponseDTO;
 import com.redhat.parodos.utils.RestUtils;
 import com.redhat.parodos.workflow.exception.MissingParameterException;
 import com.redhat.parodos.workflow.task.checker.BaseWorkFlowCheckerTask;
@@ -27,15 +27,9 @@ import com.redhat.parodos.workflows.work.WorkContext;
 import com.redhat.parodos.workflows.work.WorkReport;
 import com.redhat.parodos.workflows.work.WorkStatus;
 import com.redhat.parodos.workflows.workflow.WorkFlow;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
-
-import static com.redhat.parodos.tasks.project.consts.ProjectAccessRequestConstant.ACCESS_REQUEST_ID;
 
 /**
  * Project access request approval workflow checker task
@@ -46,41 +40,38 @@ import static com.redhat.parodos.tasks.project.consts.ProjectAccessRequestConsta
 @Slf4j
 public class ProjectAccessRequestApprovalWorkFlowCheckerTask extends BaseWorkFlowCheckerTask {
 
+	private static final String ACCESS_REQUEST_ID = "ACCESS_REQUEST_ID";
+
 	private final String serviceUrl;
 
-	private final String servicePort;
+	private final String serviceUsername;
 
-	private final String serviceAccountUsername;
-
-	private final String serviceAccountPassword;
+	private final String servicePassword;
 
 	public ProjectAccessRequestApprovalWorkFlowCheckerTask(WorkFlow projectAccessRequestApprovalEscalationWorkFlow,
-			long sla, String serviceUrl, String servicePort, String serviceAccountUsername,
-			String serviceAccountPassword) {
+			long sla, String serviceUrl, String serviceUsername, String servicePassword) {
 		super(projectAccessRequestApprovalEscalationWorkFlow, sla);
 		this.serviceUrl = serviceUrl;
-		this.servicePort = servicePort;
-		this.serviceAccountUsername = serviceAccountUsername;
-		this.serviceAccountPassword = serviceAccountPassword;
+		this.serviceUsername = serviceUsername;
+		this.servicePassword = servicePassword;
 	}
 
 	@Override
 	public WorkReport checkWorkFlowStatus(WorkContext workContext) {
-		log.info("Start ProjectAccessRequestApprovalWorkFlowCheckerTask...");
+		log.info("Start projectAccessRequestApprovalWorkFlowCheckerTask...");
 		UUID accessRequestId;
 		try {
 			accessRequestId = UUID.fromString(getRequiredParameterValue(ACCESS_REQUEST_ID));
 		}
 		catch (MissingParameterException e) {
-			log.error("Exception when trying to get required parameter(s): {}", e.getMessage());
+			log.error("Exception when trying to get required parameter: {}", e.getMessage());
 			return new DefaultWorkReport(WorkStatus.FAILED, workContext, e);
 		}
 
 		try {
-			String url = String.format("%s:%s/api/v1/projects/access/%s/status", serviceUrl, servicePort,
-					accessRequestId);
-			ResponseEntity<AccessStatusResponseDTO> responseDTO = RestUtils.restExchange(url, serviceAccountUsername,
-					serviceAccountPassword, AccessStatusResponseDTO.class);
+			String urlString = "%s/api/v1/projects/access/%s/status".formatted(serviceUrl, accessRequestId);
+			ResponseEntity<AccessStatusResponseDTO> responseDTO = RestUtils.restExchange(urlString, serviceUsername,
+					servicePassword, AccessStatusResponseDTO.class);
 			if (!responseDTO.getStatusCode().is2xxSuccessful()) {
 				log.error("Call to the api was not successful: {}", responseDTO.getStatusCode());
 			}
@@ -104,18 +95,6 @@ public class ProjectAccessRequestApprovalWorkFlowCheckerTask extends BaseWorkFlo
 			log.error("There was an issue with the REST call: {}", e.getMessage());
 		}
 		return new DefaultWorkReport(WorkStatus.FAILED, workContext);
-	}
-
-	@Data
-	@Builder
-	@AllArgsConstructor
-	@NoArgsConstructor
-	private static class AccessStatusResponseDTO {
-
-		private UUID accessRequestId;
-
-		private ProjectAccessStatus status;
-
 	}
 
 }

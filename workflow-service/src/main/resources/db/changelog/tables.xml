@@ -5,6 +5,25 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="1" author="luke" runAlways="false" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="prds_user"/>
+                <tableExists tableName="prds_project"/>
+                <tableExists tableName="prds_role"/>
+                <tableExists tableName="prds_project_user_role"/>
+                <tableExists tableName="prds_project_access_request"/>
+                <tableExists tableName="prds_workflow_definition"/>
+                <tableExists tableName="prds_workflow_task_definition"/>
+                <tableExists tableName="prds_workflow_work_definition"/>
+                <tableExists tableName="prds_workflow_execution"/>
+                <tableExists tableName="prds_workflow_task_execution"/>
+                <tableExists tableName="prds_workflow_task_execution_log"/>
+                <tableExists tableName="prds_workflow_execution_context"/>
+                <tableExists tableName="prds_workflow_checker_definition"/>
+                <tableExists tableName="prds_workflow_task_checker_definition_mapping"/>
+                <tableExists tableName="prds_workflow_fallback_mapping"/>
+            </not>
+        </preConditions>
         <!-- User Table -->
         <createTable tableName="prds_user">
             <column name="id" type="${uuidType}" defaultValue="${uuidFunction}">
@@ -15,7 +34,7 @@
             </column>
             <column name="password" type="varchar(255)"/>
             <column name="authority" type="varchar(255)"/>
-            <column name="enabled" type="tinyint"/>
+            <column name="enabled" type="BOOLEAN"/>
             <column name="first_name" type="varchar(255)"/>
             <column name="last_name" type="varchar(255)"/>
             <column name="email" type="varchar(255)"/>
@@ -162,7 +181,7 @@
             <column name="message" type="varchar(4000)"/>
             <column name="start_date" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
             <column name="end_date" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
-            <column name="arguments" type="varchar(4000)"/>
+            <column name="arguments" type="varchar(10000))"/>
             <column name="workflow_definition_id" type="${uuidType}">
                 <constraints nullable="false" foreignKeyName="fk_workflow_execution_workflow_definition"
                              references="prds_workflow_definition(id)"/>
@@ -197,7 +216,7 @@
                 <constraints nullable="false" foreignKeyName="fk_workflow_task_execution_workflow_task_definition"
                              references="prds_workflow_task_definition(id)"/>
             </column>
-            <column name="arguments" type="varchar(4000)"/>
+            <column name="arguments" type="varchar(10000)"/>
             <column name="results" type="varchar(4000)"/>
             <column name="status" type="varchar(255)"/>
             <column name="message" type="varchar(4000)"/>
@@ -261,14 +280,14 @@
             </column>
         </createTable>
 
-        <!-- Workflow Rollback join Table -->
-        <createTable tableName="prds_workflow_rollback_mapping">
-            <column name="workflow_rollback_definition_id" type="${uuidType}">
-                <constraints nullable="false" foreignKeyName="fk_workflow_rollback_definition_mapping_workflow_rollback_definition_id"
+        <!-- Workflow Fallback join Table -->
+        <createTable tableName="prds_workflow_fallback_mapping">
+            <column name="workflow_fallback_definition_id" type="${uuidType}">
+                <constraints nullable="false" foreignKeyName="fk_workflow_fallback_definition_mapping_workflow_fallback_definition_id"
                              referencedTableName="prds_workflow_definition" referencedColumnNames="id"/>
             </column>
             <column name="workflow_definition_id" type="${uuidType}">
-                <constraints nullable="false" foreignKeyName="fk_workflow_rollback_definition_mapping_workflow_definition_id"
+                <constraints nullable="false" foreignKeyName="fk_workflow_fallback_definition_mapping_workflow_definition_id"
                              referencedTableName="prds_workflow_definition" referencedColumnNames="id"/>
             </column>
         </createTable>

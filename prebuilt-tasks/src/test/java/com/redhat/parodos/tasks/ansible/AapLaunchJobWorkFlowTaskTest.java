@@ -8,14 +8,14 @@ import com.redhat.parodos.workflow.utils.WorkContextUtils;
 import com.redhat.parodos.workflows.work.WorkContext;
 import com.redhat.parodos.workflows.work.WorkReport;
 import com.redhat.parodos.workflows.work.WorkStatus;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.stubbing.Answer;
 
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -26,10 +26,6 @@ import static org.mockito.Mockito.spy;
 public class AapLaunchJobWorkFlowTaskTest {
 
 	private static final String AAP_URL_TEST = "aap-url-test";
-
-	private static final String WINDOWS_JOB_TEMPLATE_ID_TEST = "windows-job-template-id-test";
-
-	private static final String RHEL_JOB_TEMPLATE_ID_TEST = "rhel-job-template-id-test";
 
 	private static final String USERNAME_TEST = "username-test";
 
@@ -43,7 +39,7 @@ public class AapLaunchJobWorkFlowTaskTest {
 
 	private AapLaunchJobWorkFlowTask aapLaunchJobWorkFlowTask;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.aapLaunchJobWorkFlowTask = spy(new AapLaunchJobWorkFlowTask(AAP_URL_TEST, USERNAME_TEST, PASSWORD_TEST));
 		try {

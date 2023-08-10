@@ -21,14 +21,14 @@ import com.redhat.parodos.sdk.model.WorkRequestDTO;
 import com.redhat.parodos.sdkutils.WorkFlowServiceUtils;
 import com.redhat.parodos.workflow.consts.WorkFlowConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.util.CollectionUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Gloria Ciavarrini (Github: gciavarrini)
@@ -90,19 +90,18 @@ public class SimpleWorkFlowTest {
 
 			assertNotNull(workFlowDefinition.getWorks());
 			assertEquals(2, workFlowDefinition.getWorks().size());
-			assertEquals("restCallTask", workFlowDefinition.getWorks().get(0).getName());
-			assertEquals(WorkDefinitionResponseDTO.WorkTypeEnum.TASK,
-					workFlowDefinition.getWorks().get(0).getWorkType());
-			assertTrue(CollectionUtils.isEmpty(workFlowDefinition.getWorks().get(0).getWorks()));
-			assertNull(workFlowDefinition.getWorks().get(0).getProcessingType());
-			assertNotNull(workFlowDefinition.getWorks().get(0).getParameters());
+			List<WorkDefinitionResponseDTO> works = workFlowDefinition.getWorks().stream().toList();
+			assertEquals("restCallTask", works.get(0).getName());
+			assertEquals(WorkDefinitionResponseDTO.WorkTypeEnum.TASK, works.get(0).getWorkType());
+			assertTrue(CollectionUtils.isEmpty(works.get(0).getWorks()));
+			assertNull(works.get(0).getProcessingType());
+			assertNotNull(works.get(0).getParameters());
 
-			assertEquals("loggingTask", workFlowDefinition.getWorks().get(1).getName());
-			assertEquals(WorkDefinitionResponseDTO.WorkTypeEnum.TASK,
-					workFlowDefinition.getWorks().get(1).getWorkType());
-			assertTrue(CollectionUtils.isEmpty(workFlowDefinition.getWorks().get(1).getWorks()));
-			assertNull(workFlowDefinition.getWorks().get(1).getProcessingType());
-			assertNotNull(workFlowDefinition.getWorks().get(1).getParameters());
+			assertEquals("loggingTask", works.get(1).getName());
+			assertEquals(WorkDefinitionResponseDTO.WorkTypeEnum.TASK, works.get(1).getWorkType());
+			assertTrue(CollectionUtils.isEmpty(works.get(1).getWorks()));
+			assertNull(works.get(1).getProcessingType());
+			assertNotNull(works.get(1).getParameters());
 		};
 	}
 

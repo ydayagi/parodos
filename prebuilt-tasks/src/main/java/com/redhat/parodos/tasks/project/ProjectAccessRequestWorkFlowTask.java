@@ -2,9 +2,10 @@ package com.redhat.parodos.tasks.project;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import com.redhat.parodos.project.enums.Role;
+import com.redhat.parodos.tasks.project.dto.AccessRequestDTO;
+import com.redhat.parodos.tasks.project.dto.AccessResponseDTO;
 import com.redhat.parodos.utils.RestUtils;
 import com.redhat.parodos.workflow.exception.MissingParameterException;
 import com.redhat.parodos.workflow.parameter.WorkParameter;
@@ -14,44 +15,41 @@ import com.redhat.parodos.workflows.work.DefaultWorkReport;
 import com.redhat.parodos.workflows.work.WorkContext;
 import com.redhat.parodos.workflows.work.WorkReport;
 import com.redhat.parodos.workflows.work.WorkStatus;
-import lombok.Builder;
-import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
 
-import static com.redhat.parodos.tasks.project.consts.ProjectAccessRequestConstant.ACCESS_REQUEST_APPROVAL_USERNAMES;
-import static com.redhat.parodos.tasks.project.consts.ProjectAccessRequestConstant.ACCESS_REQUEST_ESCALATION_USERNAME;
-import static com.redhat.parodos.tasks.project.consts.ProjectAccessRequestConstant.ACCESS_REQUEST_ID;
-import static com.redhat.parodos.tasks.project.consts.ProjectAccessRequestConstant.PARAMETER_ROLE;
-import static com.redhat.parodos.tasks.project.consts.ProjectAccessRequestConstant.PARAMETER_ROLE_DEFAULT;
-import static com.redhat.parodos.tasks.project.consts.ProjectAccessRequestConstant.PARAMETER_USERNAME;
-
 @Slf4j
 public class ProjectAccessRequestWorkFlowTask extends BaseWorkFlowTask {
 
+	private static final String PARAMETER_USERNAME = "USERNAME";
+
+	private static final String PARAMETER_ROLE = "ROLE";
+
+	private static final String PARAMETER_ROLE_DEFAULT = "DEVELOPER";
+
+	private static final String ACCESS_REQUEST_ID = "ACCESS_REQUEST_ID";
+
+	private static final String ACCESS_REQUEST_APPROVAL_USERNAMES = "ACCESS_REQUEST_APPROVAL_USERNAMES";
+
+	private static final String ACCESS_REQUEST_ESCALATION_USERNAME = "ACCESS_REQUEST_ESCALATION_USERNAME";
+
 	private final String serviceUrl;
 
-	private final String servicePort;
+	private final String serviceUsername;
 
-	private final String serviceAccountUsername;
+	private final String servicePassword;
 
-	private final String serviceAccountPassword;
-
-	public ProjectAccessRequestWorkFlowTask(String serviceUrl, String servicePort, String serviceAccountUsername,
-			String serviceAccountPassword) {
-		super();
+	public ProjectAccessRequestWorkFlowTask(String serviceUrl, String serviceUsername, String servicePassword) {
 		this.serviceUrl = serviceUrl;
-		this.servicePort = servicePort;
-		this.serviceAccountUsername = serviceAccountUsername;
-		this.serviceAccountPassword = serviceAccountPassword;
+		this.serviceUsername = serviceUsername;
+		this.servicePassword = servicePassword;
 	}
 
 	@Override
 	public WorkReport execute(WorkContext workContext) {
-		String username;
-		String role;
+		String username, role;
 		try {
 			username = getRequiredParameterValue(PARAMETER_USERNAME);
 			role = getOptionalParameterValue(PARAMETER_ROLE, PARAMETER_ROLE_DEFAULT, false);
@@ -71,17 +69,15 @@ public class ProjectAccessRequestWorkFlowTask extends BaseWorkFlowTask {
 		}
 
 		try {
-			String url = String.format("%s:%s/api/v1/projects/%s/access", serviceUrl, servicePort,
-					getProjectId(workContext));
-			log.info("url: {}", url);
+			String urlString = "%s/api/v1/projects/%s/access".formatted(serviceUrl, getProjectId(workContext));
 			AccessRequestDTO requestDTO = AccessRequestDTO.builder().username(username)
 					.role(Role.valueOf(role.toUpperCase())).build();
-			ResponseEntity<AccessResponseDTO> responseDTO = RestUtils.executePost(url, requestDTO,
-					serviceAccountUsername, serviceAccountPassword, AccessResponseDTO.class);
+			ResponseEntity<AccessResponseDTO> responseDTO = RestUtils.executePost(urlString, requestDTO,
+					serviceUsername, servicePassword, AccessResponseDTO.class);
 			if (responseDTO.getStatusCode().is2xxSuccessful()) {
 				log.info("Rest call completed with response: {}", responseDTO.getBody());
 				addParameter(ACCESS_REQUEST_ID,
-						Objects.requireNonNull(responseDTO.getBody()).accessRequestId.toString());
+						Objects.requireNonNull(responseDTO.getBody()).getAccessRequestId().toString());
 				addParameter(ACCESS_REQUEST_APPROVAL_USERNAMES,
 						String.join(",", Objects.requireNonNull(responseDTO.getBody()).getApprovalSentTo()));
 				addParameter(ACCESS_REQUEST_ESCALATION_USERNAME,
@@ -103,27 +99,6 @@ public class ProjectAccessRequestWorkFlowTask extends BaseWorkFlowTask {
 						.description("The project id to assign user into").build(),
 				WorkParameter.builder().key(PARAMETER_ROLE).type(WorkParameterType.TEXT).optional(true)
 						.description("The role to grant to the user").build());
-	}
-
-	@Data
-	@Builder
-	private static class AccessRequestDTO {
-
-		private String username;
-
-		private Role role;
-
-	}
-
-	@Data
-	private static class AccessResponseDTO {
-
-		private UUID accessRequestId;
-
-		private List<String> approvalSentTo;
-
-		private String escalationSentTo;
-
 	}
 
 }

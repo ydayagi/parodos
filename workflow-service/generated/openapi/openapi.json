@@ -1,8 +1,8 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "title" : "Parodos Workflow Service API",
     "description" : "This is the API documentation for the Parodos Workflow Service. It provides operations to execute assessments to determine infrastructure options (tooling + environments). Also executes infrastructure task workflows to call downstream systems to stand-up an infrastructure option.",
+    "title" : "Parodos Workflow Service API",
     "version" : "v1.0.0"
   },
   "servers" : [ {
@@ -1659,6 +1659,9 @@
           "author" : {
             "type" : "string"
           },
+          "cronExpression" : {
+            "type" : "string"
+          },
           "id" : {
             "type" : "string",
             "format" : "uuid"
@@ -1686,11 +1689,16 @@
             "type" : "string",
             "enum" : [ "SEQUENTIAL", "PARALLEL", "OTHER" ]
           },
+          "workFlowCheckerMappingDefinitionId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
           "workType" : {
             "type" : "string",
-            "enum" : [ "TASK", "WORKFLOW" ]
+            "enum" : [ "TASK", "WORKFLOW", "CHECKER" ]
           },
           "works" : {
+            "uniqueItems" : true,
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/WorkDefinitionResponseDTO"
@@ -1729,6 +1737,12 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "cronExpression" : {
+            "type" : "string"
+          },
+          "fallbackWorkflow" : {
+            "type" : "string"
+          },
           "id" : {
             "type" : "string",
             "format" : "uuid"
@@ -1756,14 +1770,12 @@
           "properties" : {
             "$ref" : "#/components/schemas/WorkFlowPropertiesDefinitionDTO"
           },
-          "rollbackWorkflow" : {
-            "type" : "string"
-          },
           "type" : {
             "type" : "string",
             "enum" : [ "ASSESSMENT", "CHECKER", "INFRASTRUCTURE", "ESCALATION" ]
           },
           "works" : {
+            "uniqueItems" : true,
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/WorkDefinitionResponseDTO"
@@ -1899,6 +1911,10 @@
           "executeBy" : {
             "type" : "string"
           },
+          "originalExecutionId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
           "projectId" : {
             "type" : "string",
             "format" : "uuid"
@@ -1926,6 +1942,10 @@
       "WorkFlowStatusResponseDTO" : {
         "type" : "object",
         "properties" : {
+          "fallbackExecutionId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
           "message" : {
             "type" : "string"
           },
@@ -2002,7 +2022,7 @@
           },
           "type" : {
             "type" : "string",
-            "enum" : [ "TASK", "WORKFLOW" ]
+            "enum" : [ "TASK", "WORKFLOW", "CHECKER" ]
           },
           "workName" : {
             "type" : "string"
@@ -2033,7 +2053,7 @@
           },
           "type" : {
             "type" : "string",
-            "enum" : [ "TASK", "WORKFLOW" ]
+            "enum" : [ "TASK", "WORKFLOW", "CHECKER" ]
           },
           "works" : {
             "type" : "array",

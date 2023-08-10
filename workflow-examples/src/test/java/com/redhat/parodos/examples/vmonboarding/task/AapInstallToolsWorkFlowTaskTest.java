@@ -11,14 +11,14 @@ import com.redhat.parodos.workflow.utils.WorkContextUtils;
 import com.redhat.parodos.workflows.work.WorkContext;
 import com.redhat.parodos.workflows.work.WorkReport;
 import com.redhat.parodos.workflows.work.WorkStatus;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.stubbing.Answer;
 
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -34,19 +34,19 @@ public class AapInstallToolsWorkFlowTaskTest extends BaseInfrastructureWorkFlowT
 
 	private static final String USERNAME_TEST = "username-test";
 
-	public static final String PASSWORD_TEST = "password-test";
+	private static final String PASSWORD_TEST = "password-test";
 
-	public static final String VM_TYPE_PARAMETER_NAME = "VM_TYPE";
+	private static final String VM_TYPE_PARAMETER_NAME = "VM_TYPE";
 
-	public static final String VM_TYPE_PARAMETER_VALUE_TEST = "vm-type-test";
+	private static final String VM_TYPE_PARAMETER_VALUE_TEST = "vm-type-test";
 
-	public static final String AAP_GET_JOB_RESPONSE_DTO_JOB_ID_TEST = "job-id-test";
+	private static final String AAP_GET_JOB_RESPONSE_DTO_JOB_ID_TEST = "job-id-test";
 
 	private AapInstallToolsWorkFlowTask aapCreateVMWorkFlowTask;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
-		this.aapCreateVMWorkFlowTask = spy((AapInstallToolsWorkFlowTask) getConcretePersonImplementation());
+		this.aapCreateVMWorkFlowTask = spy((AapInstallToolsWorkFlowTask) getTaskUnderTest());
 		try {
 			doReturn(VM_TYPE_PARAMETER_VALUE_TEST).when(this.aapCreateVMWorkFlowTask)
 					.getRequiredParameterValue(eq(VM_TYPE_PARAMETER_NAME));
@@ -57,7 +57,7 @@ public class AapInstallToolsWorkFlowTaskTest extends BaseInfrastructureWorkFlowT
 	}
 
 	@Override
-	protected BaseInfrastructureWorkFlowTask getConcretePersonImplementation() {
+	protected BaseInfrastructureWorkFlowTask getTaskUnderTest() {
 		return new AapInstallToolsWorkFlowTask(AAP_URL_TEST, JOB_TEMPLATE_ID_TEST, USERNAME_TEST, PASSWORD_TEST);
 	}
 

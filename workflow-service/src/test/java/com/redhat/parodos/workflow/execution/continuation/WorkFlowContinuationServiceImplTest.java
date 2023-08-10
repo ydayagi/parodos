@@ -16,13 +16,15 @@ import com.redhat.parodos.workflow.execution.repository.WorkFlowRepository;
 import com.redhat.parodos.workflow.execution.repository.WorkFlowTaskRepository;
 import com.redhat.parodos.workflow.execution.service.WorkFlowExecutor;
 import com.redhat.parodos.workflow.execution.service.WorkFlowExecutor.ExecutionContext;
+import com.redhat.parodos.workflow.execution.service.WorkFlowService;
 import com.redhat.parodos.workflows.work.WorkContext;
 import com.redhat.parodos.workflows.work.WorkStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,6 +55,8 @@ class WorkFlowContinuationServiceImplTest {
 
 	private WorkFlowExecutor workFlowExecutor;
 
+	private WorkFlowService workFlowService;
+
 	@BeforeEach
 	void initEach() {
 		this.workFlowDefinitionRepository = mock(WorkFlowDefinitionRepository.class);
@@ -60,7 +64,9 @@ class WorkFlowContinuationServiceImplTest {
 		this.workFlowRepository = mock(WorkFlowRepository.class);
 		this.workFlowTaskRepository = mock(WorkFlowTaskRepository.class);
 		this.workFlowExecutor = mock(WorkFlowExecutor.class);
-		this.service = new WorkFlowContinuationServiceImpl(this.workFlowRepository, this.workFlowExecutor);
+		this.workFlowService = mock(WorkFlowService.class);
+		this.service = new WorkFlowContinuationServiceImpl(this.workFlowRepository, this.workFlowExecutor,
+				workFlowService);
 	}
 
 	@Test
@@ -73,7 +79,7 @@ class WorkFlowContinuationServiceImplTest {
 
 		// then
 		verify(this.workFlowRepository, times(1)).findByStatusInAndIsMain(workFlowStatuses);
-		verify(this.workFlowExecutor, times(0)).execute(any(ExecutionContext.class));
+		verify(this.workFlowExecutor, times(0)).execute(any(ExecutionContext.class), any());
 	}
 
 	@Test
@@ -146,7 +152,8 @@ class WorkFlowContinuationServiceImplTest {
 
 		when(this.workFlowTaskRepository.findByWorkFlowExecutionId(wfExecution.getId()))
 				.thenReturn(List.of(workFlowTaskExecution));
-		doThrow(new RuntimeException("JsonParseException")).when(workFlowExecutor).execute(any(ExecutionContext.class));
+		doThrow(new RuntimeException("JsonParseException")).when(workFlowExecutor).execute(any(ExecutionContext.class),
+				any());
 
 		// when
 		Exception exception = assertThrows(RuntimeException.class, () -> this.service.workFlowRunAfterStartup());
@@ -156,7 +163,7 @@ class WorkFlowContinuationServiceImplTest {
 		assertTrue(exception.getMessage().contains("JsonParseException"));
 
 		verify(this.workFlowRepository, times(1)).findByStatusInAndIsMain(workFlowStatuses);
-		verify(this.workFlowExecutor, times(1)).execute(any(ExecutionContext.class));
+		verify(this.workFlowExecutor, times(1)).execute(any(ExecutionContext.class), any());
 
 	}
 
@@ -188,10 +195,10 @@ class WorkFlowContinuationServiceImplTest {
 
 	private void verifyAsyncExecution(WorkFlowExecution workFlowExecution) {
 		var argument = ArgumentCaptor.forClass(ExecutionContext.class);
-		verify(this.workFlowExecutor, times(1)).execute(argument.capture());
-		assertThat(argument.getValue().projectId()).isEqualTo(workFlowExecution.getProjectId());
-		assertThat(argument.getValue().userId()).isEqualTo(workFlowExecution.getUser().getId());
-		assertThat(argument.getValue().workFlowName()).isEqualTo(TEST_WORKFLOW);
+		verify(this.workFlowExecutor, times(1)).execute(argument.capture(), any());
+		assertThat(argument.getValue().projectId(), equalTo(workFlowExecution.getProjectId()));
+		assertThat(argument.getValue().userId(), equalTo(workFlowExecution.getUser().getId()));
+		assertThat(argument.getValue().workFlowName(), equalTo(TEST_WORKFLOW));
 	}
 
 }

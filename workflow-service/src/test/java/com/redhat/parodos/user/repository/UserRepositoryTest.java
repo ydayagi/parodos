@@ -2,7 +2,7 @@ package com.redhat.parodos.user.repository;
 
 import java.util.UUID;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 
 import com.redhat.parodos.repository.RepositoryTestBase;
 import com.redhat.parodos.user.entity.User;
@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserRepositoryTest extends RepositoryTestBase {
 
@@ -37,7 +38,7 @@ class UserRepositoryTest extends RepositoryTestBase {
 
 		// then
 		assertNotNull(user);
-		assertTrue(user.isPresent());
+		assertThat(user.isPresent(), is(true));
 		assertEquals(user.get().getUsername(), username);
 	}
 

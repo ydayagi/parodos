@@ -111,6 +111,11 @@ jobs:
       - name: Upload image
         uses: ishworkh/docker-image-artifact-upload@v1
         with:
+          image: "docker-compose_examples-service:latest"
+
+      - name: Upload image
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
           image: "docker-compose_workflow-service:latest"
 
       - name: Upload image
@@ -175,6 +180,11 @@ jobs:
         with:
           image: "docker-compose_workflow-service:latest"
 
+      - name: Download images
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: "docker-compose_examples-service:latest"
+
       - name: Load images inside kind
         run: |
           make push-images-to-kind
@@ -185,6 +195,7 @@ jobs:
           kubectl wait --timeout=600s --for=condition=Ready pods --all -n default || {
             echo "Timeout waiting for Parodos services to be ready";
             kubectl get pods --all-namespaces;
+            kubectl describe pods
             echo "************ workflow-service logs ***************";
             kubectl logs -l app=workflow-service --tail=40;
             echo "************ notification-service logs ***************";
@@ -201,7 +212,10 @@ jobs:
 
       - name: Run integration tests
         run: |
-          WORKFLOW_SERVICE_HOST=workflow-service.parodos-dev NOTIFICATION_SERVICE_HOST=notification-service.parodos-dev SERVER_PORT=80 mvn verify -pl integration-tests -P integration-test
+          kubectl create ns test
+          kubectl config view --flatten --minify -o json > /tmp/kubeconfig.json
+          sed -i 's/https:\/\/127.0.0.1:[0-9]*/https:\/\/kubernetes.default.svc:443/g' /tmp/kubeconfig.json
+          KUBECONFIG_JSON=/tmp/kubeconfig.json WORKFLOW_SERVICE_HOST=workflow-service.parodos-dev NOTIFICATION_SERVICE_HOST=notification-service.parodos-dev SERVER_PORT=80 mvn verify -pl integration-tests -P integration-test
 
       - name: Collect logs
         if: ${{ failure() }}
@@ -221,3 +235,31 @@ jobs:
         uses: skjolber/maven-cache-github-action@v1
         with:
           step: save
+
+  security-checks:
+    runs-on: ubuntu-latest
+    needs:
+      - containers
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Go environment
+        uses: actions/setup-go@v4.0.1
+        with:
+          go-version: 'stable'
+
+      - name: Download images
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: "docker-compose_notification-service:latest"
+
+      - name: Download images
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: "docker-compose_workflow-service:latest"
+
+      - name: "Security analysis of images"
+        run: |
+          make analyse-images stop-local-registry stop-clair
+
+

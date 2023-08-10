@@ -5,7 +5,7 @@ import java.util.List;
 import com.redhat.parodos.workflow.option.WorkFlowOption;
 import com.redhat.parodos.workflow.task.assessment.BaseAssessmentTask;
 import com.redhat.parodos.workflow.task.enums.WorkFlowTaskType;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class BaseAssessmentTaskTest {
 
@@ -17,15 +17,41 @@ public abstract class BaseAssessmentTaskTest {
 	@SuppressWarnings("unused")
 	private BaseAssessmentTask baseAssessmentTask;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
-		this.baseAssessmentTask = getConcretePersonImplementation();
+		this.baseAssessmentTask = getTaskUnderTest();
 	}
 
 	/**
-	 * @return new instance of non-abstract class extending BaseInfrastructureWorkFlowTask
-	 */
-	protected abstract BaseAssessmentTask getConcretePersonImplementation();
+	 * Provides a real implementation of the class to be tested. This method should be
+	 * used when extending {@link BaseAssessmentTaskTest} to create a test class, such as
+	 * {@link com.redhat.parodos.examples.complex.task.OnboardingAssessmentTaskTest}.
+	 * Example usage: <pre> {@code
+	 *     private MyTaskClass myTaskClass;
+	 *
+	 *     &#64;Before
+	 *     public void setUp() {
+	 *         this.myTaskClass = spy((MyTaskClass) getTaskUnderTest());
+	 *         try {
+	 *              // Set up a mocked return value for the 'getRequiredParameterValue' method
+	 * 				doReturn("a_value").when(this.myTaskClass).getRequiredParameterValue(eq("a_param"));
+	 *         }
+	 * 		   catch (MissingParameterException e) {
+	 * 			throw new RuntimeException(e);
+	 *        }
+	 *     }
+	 *
+	 *     &#64;Test
+	 *     public void exampleTest() {
+	 *         // Test implementation here
+	 *         // ...
+	 *
+	 *         // Invoke the real implementation of 'checkWorkFlowStatus' method
+	 *         WorkReport workReport = myTaskClass.checkWorkFlowStatus(workContext);
+	 *     }
+	 * }</pre>
+	 **/
+	protected abstract BaseAssessmentTask getTaskUnderTest();
 
 	public List<WorkFlowOption> getWorkFlowOptions() {
 		return workflowOptions;

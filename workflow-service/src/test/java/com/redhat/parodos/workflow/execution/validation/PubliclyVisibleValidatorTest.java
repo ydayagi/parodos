@@ -1,13 +1,13 @@
 package com.redhat.parodos.workflow.execution.validation;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 import com.redhat.parodos.workflow.context.WorkContextDelegate;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class PubliclyVisibleValidatorTest {
@@ -16,7 +16,7 @@ public class PubliclyVisibleValidatorTest {
 
 	private ConstraintValidatorContext constraintValidatorContext;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		validator = new PublicVisibilityValidator();
 		constraintValidatorContext = mock(ConstraintValidatorContext.class);

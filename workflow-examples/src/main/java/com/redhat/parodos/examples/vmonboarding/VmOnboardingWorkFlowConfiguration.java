@@ -9,6 +9,7 @@ import com.redhat.parodos.examples.vmonboarding.task.AapCreateVMWorkFlowTask;
 import com.redhat.parodos.examples.vmonboarding.task.AapInstallToolsWorkFlowTask;
 import com.redhat.parodos.examples.vmonboarding.task.NotificationWorkFlowTask;
 import com.redhat.parodos.examples.vmonboarding.task.ServiceNowTicketCreationWorkFlowTask;
+import com.redhat.parodos.infrastructure.Notifier;
 import com.redhat.parodos.workflow.annotation.Checker;
 import com.redhat.parodos.workflow.annotation.Infrastructure;
 import com.redhat.parodos.workflow.annotation.Parameter;
@@ -73,13 +74,13 @@ public class VmOnboardingWorkFlowConfiguration {
 	}
 
 	@Bean(name = "notificationTicketApprovalWorkFlowTask")
-	NotificationWorkFlowTask notificationTicketApprovalWorkFlowTask() {
-		return new NotificationWorkFlowTask(NOTIFICATION_SERVICE_NOW_TICKET_APPROVED);
+	NotificationWorkFlowTask notificationTicketApprovalWorkFlowTask(Notifier notifier) {
+		return new NotificationWorkFlowTask(notifier, NOTIFICATION_SERVICE_NOW_TICKET_APPROVED);
 	}
 
 	@Bean(name = "notificationVmCreatedWorkFlowTask")
-	NotificationWorkFlowTask notificationVmCreatedWorkFlowTask() {
-		return new NotificationWorkFlowTask(NOTIFICATION_SERVICE_NOW_VM_CREATED);
+	NotificationWorkFlowTask notificationVmCreatedWorkFlowTask(Notifier notifier) {
+		return new NotificationWorkFlowTask(notifier, NOTIFICATION_SERVICE_NOW_VM_CREATED);
 	}
 
 	@Bean(name = "ansibleVMCreationWorkFlowCheckerTask")
@@ -155,7 +156,7 @@ public class VmOnboardingWorkFlowConfiguration {
 
 	// Assessment workflow
 	@Bean
-	WorkFlowOption onboardingOcpOption() {
+	WorkFlowOption vmOnboardingOption() {
 		return new WorkFlowOption.Builder("vmOnboarding", "vmOnboardingWorkFlow")
 				.addToDetails("this is for creating vm").displayName("VM Onboarding")
 				.setDescription("this is for creating vm").build();

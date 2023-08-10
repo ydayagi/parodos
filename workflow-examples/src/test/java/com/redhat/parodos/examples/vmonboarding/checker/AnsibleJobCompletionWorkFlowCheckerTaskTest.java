@@ -11,13 +11,13 @@ import com.redhat.parodos.workflow.utils.WorkContextUtils;
 import com.redhat.parodos.workflows.work.WorkContext;
 import com.redhat.parodos.workflows.work.WorkReport;
 import com.redhat.parodos.workflows.work.WorkStatus;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -40,10 +40,10 @@ public class AnsibleJobCompletionWorkFlowCheckerTaskTest extends BaseWorkFlowChe
 
 	private AnsibleJobCompletionWorkFlowCheckerTask ansibleJobCompletionWorkFlowCheckerTask;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.ansibleJobCompletionWorkFlowCheckerTask = spy(
-				(AnsibleJobCompletionWorkFlowCheckerTask) getConcretePersonImplementation());
+				(AnsibleJobCompletionWorkFlowCheckerTask) getTaskUnderTest());
 		try {
 			doReturn(JOB_ID_PARAMETER_VALUE_TEST).when(this.ansibleJobCompletionWorkFlowCheckerTask)
 					.getRequiredParameterValue(eq(JOB_ID_PARAMETER_NAME));
@@ -54,7 +54,7 @@ public class AnsibleJobCompletionWorkFlowCheckerTaskTest extends BaseWorkFlowChe
 	}
 
 	@Override
-	protected BaseWorkFlowCheckerTask getConcretePersonImplementation() {
+	protected BaseWorkFlowCheckerTask getTaskUnderTest() {
 		return new AnsibleJobCompletionWorkFlowCheckerTask(SERVICE_URL_TEST, USERNAME_TEST, PASSWORD_TEST);
 	}
 

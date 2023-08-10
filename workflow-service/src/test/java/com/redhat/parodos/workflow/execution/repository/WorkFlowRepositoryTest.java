@@ -80,8 +80,7 @@ public class WorkFlowRepositoryTest extends RepositoryTestBase {
 		assertNotNull(flowExecution.getWorkFlowExecutionContext().getWorkContext());
 		assertEquals("test_value", flowExecution.getWorkFlowExecutionContext().getWorkContext().get("test_key"));
 		assertEquals(testList, flowExecution.getWorkFlowExecutionContext().getWorkContext().get("test_list"));
-		assertEquals(testUUID.toString(),
-				flowExecution.getWorkFlowExecutionContext().getWorkContext().get("test_uuid"));
+		assertEquals(testUUID, flowExecution.getWorkFlowExecutionContext().getWorkContext().get("test_uuid"));
 	}
 
 	@Test
@@ -129,7 +128,8 @@ public class WorkFlowRepositoryTest extends RepositoryTestBase {
 		// given
 		User user = createUser();
 		WorkFlowExecution mainWorkFlowExecution = createWorkFlowExecution();
-		WorkFlowExecution workFlowExecution = WorkFlowExecution.builder().workFlowDefinition(createWorkFlowDefinition())
+		WorkFlowDefinition workFlowDefinition = createWorkFlowDefinition();
+		WorkFlowExecution workFlowExecution = WorkFlowExecution.builder().workFlowDefinition(workFlowDefinition)
 				.status(WorkStatus.IN_PROGRESS).projectId(createProject(user).getId()).user(createUser())
 				.mainWorkFlowExecution(mainWorkFlowExecution).build();
 		workFlowRepository.save(workFlowExecution);
@@ -142,7 +142,7 @@ public class WorkFlowRepositoryTest extends RepositoryTestBase {
 
 		// When
 		WorkFlowExecution restartedWorkFlowExecution = WorkFlowExecution.builder()
-				.workFlowDefinition(createWorkFlowDefinition()).status(WorkStatus.IN_PROGRESS)
+				.workFlowDefinition(workFlowDefinition).status(WorkStatus.IN_PROGRESS)
 				.projectId(createProject(user).getId()).user(createUser()).mainWorkFlowExecution(mainWorkFlowExecution)
 				.originalWorkFlowExecution(workFlowExecution).build();
 		workFlowRepository.save(restartedWorkFlowExecution);

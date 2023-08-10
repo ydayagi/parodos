@@ -15,16 +15,16 @@ import com.redhat.parodos.workflow.utils.WorkContextUtils;
 import com.redhat.parodos.workflows.work.WorkContext;
 import com.redhat.parodos.workflows.work.WorkReport;
 import com.redhat.parodos.workflows.work.WorkStatus;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -62,16 +62,16 @@ public class JiraTicketCreationWorkFlowTaskTest extends BaseInfrastructureWorkFl
 
 	private JiraTicketCreationWorkFlowTask jiraTicketCreationWorkFlowTask;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
-		this.jiraTicketCreationWorkFlowTask = spy((JiraTicketCreationWorkFlowTask) getConcretePersonImplementation());
+		this.jiraTicketCreationWorkFlowTask = spy((JiraTicketCreationWorkFlowTask) getTaskUnderTest());
 		WorkFlowLogService workFlowLogService = mock(WorkFlowLogService.class);
 		doNothing().when(workFlowLogService).writeLog(any(), any(), any());
 		ReflectionTestUtils.setField(jiraTicketCreationWorkFlowTask, "workFlowLogService", workFlowLogService);
 	}
 
 	@Override
-	protected BaseInfrastructureWorkFlowTask getConcretePersonImplementation() {
+	protected BaseInfrastructureWorkFlowTask getTaskUnderTest() {
 		return new JiraTicketCreationWorkFlowTask(JIRA_SERVICE_BASE_URL_TEST, JIRA_USERNAME_TEST, JIRA_PASSWORD_TEST,
 				APPROVER_ID_TEST);
 	}

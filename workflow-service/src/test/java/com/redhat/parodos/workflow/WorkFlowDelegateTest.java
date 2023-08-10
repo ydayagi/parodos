@@ -16,6 +16,7 @@
 package com.redhat.parodos.workflow;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +35,8 @@ import org.mockito.Mock;
 
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 
 /**
  * unit test for WorkFlowDelegate
@@ -96,30 +98,29 @@ class WorkFlowDelegateTest {
 				WorkContextDelegate.read(workContext, WorkContextDelegate.ProcessType.WORKFLOW_EXECUTION,
 						TEST_WORKFLOW_NAME, WorkContextDelegate.Resource.ARGUMENTS),
 				new TypeReference<HashMap<String, String>>() {
-				})).containsEntry(TEST_WORKFLOW_ARG_KEY, TEST_WORKFLOW_ARG_VALUE);
+				}), hasEntry(TEST_WORKFLOW_ARG_KEY, TEST_WORKFLOW_ARG_VALUE));
 
 		assertThat(new ObjectMapper().convertValue(
 				WorkContextDelegate.read(workContext, WorkContextDelegate.ProcessType.WORKFLOW_EXECUTION,
 						TEST_SUB_WORKFLOW_NAME, WorkContextDelegate.Resource.ARGUMENTS),
 				new TypeReference<HashMap<String, String>>() {
-				})).containsEntry(TEST_SUB_WORKFLOW_ARG_KEY, TEST_SUB_WORKFLOW_ARG_VALUE);
+				}), hasEntry(TEST_SUB_WORKFLOW_ARG_KEY, TEST_SUB_WORKFLOW_ARG_VALUE));
 
 		assertThat(new ObjectMapper().convertValue(
 				WorkContextDelegate.read(workContext, WorkContextDelegate.ProcessType.WORKFLOW_TASK_EXECUTION,
 						TEST_TASK_NAME, WorkContextDelegate.Resource.ARGUMENTS),
 				new TypeReference<HashMap<String, String>>() {
-				})).containsEntry(TEST_TASK_ARG_KEY, TEST_TASK_ARG_VALUE);
+				}), hasEntry(TEST_TASK_ARG_KEY, TEST_TASK_ARG_VALUE));
 	}
 
 	private WorkFlowDefinitionResponseDTO sampleWorkflowDefinitionResponse() {
-		return WorkFlowDefinitionResponseDTO
-				.builder().name(
-						TEST_WORKFLOW_NAME)
-				.works(List.of(WorkDefinitionResponseDTO.builder().name(TEST_SUB_WORKFLOW_NAME)
-						.workType(WorkType.WORKFLOW).works(List.of(WorkDefinitionResponseDTO.builder()
-								.name(TEST_TASK_NAME).workType(WorkType.TASK).build()))
-						.build()))
-				.build();
+		LinkedHashSet<WorkDefinitionResponseDTO> workFlowWorks = new LinkedHashSet<>();
+		LinkedHashSet<WorkDefinitionResponseDTO> taskWorks = new LinkedHashSet<>();
+
+		taskWorks.add(WorkDefinitionResponseDTO.builder().name(TEST_TASK_NAME).workType(WorkType.TASK).build());
+		workFlowWorks.add(WorkDefinitionResponseDTO.builder().name(TEST_SUB_WORKFLOW_NAME).workType(WorkType.WORKFLOW)
+				.works(taskWorks).build());
+		return WorkFlowDefinitionResponseDTO.builder().name(TEST_WORKFLOW_NAME).works(workFlowWorks).build();
 	}
 
 }

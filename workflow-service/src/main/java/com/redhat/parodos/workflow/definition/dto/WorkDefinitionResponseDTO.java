@@ -15,7 +15,7 @@
  */
 package com.redhat.parodos.workflow.definition.dto;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.redhat.parodos.workflow.definition.entity.WorkFlowCheckerMappingDefinition;
 import com.redhat.parodos.workflow.definition.entity.WorkFlowDefinition;
 import com.redhat.parodos.workflow.definition.entity.WorkFlowTaskDefinition;
 import com.redhat.parodos.workflow.definition.entity.WorkFlowWorkDefinition;
@@ -61,11 +62,17 @@ public class WorkDefinitionResponseDTO {
 
 	private String author;
 
-	private List<WorkDefinitionResponseDTO> works;
+	private LinkedHashSet<WorkDefinitionResponseDTO> works;
 
 	private Map<String, Map<String, Object>> parameters;
 
 	private List<WorkFlowTaskOutput> outputs;
+
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
+	private UUID workFlowCheckerMappingDefinitionId;
+
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
+	private String cronExpression;
 
 	@JsonIgnore
 	private Integer numberOfWorkUnits;
@@ -87,15 +94,29 @@ public class WorkDefinitionResponseDTO {
 	public static WorkDefinitionResponseDTO fromWorkFlowDefinitionEntity(WorkFlowDefinition wd,
 			List<WorkFlowWorkDefinition> dependencies) {
 		return WorkDefinitionResponseDTO.builder().id(wd.getId()).workType(WorkType.WORKFLOW).name(wd.getName())
-				.parameterFromString(wd.getParameters()).processingType(wd.getProcessingType()).works(new ArrayList<>())
-				.numberOfWorkUnits(dependencies.size()).build();
+				.parameterFromString(wd.getParameters()).processingType(wd.getProcessingType())
+				.works(new LinkedHashSet<>()).numberOfWorkUnits(dependencies.size()).build();
 	}
 
 	public static WorkDefinitionResponseDTO fromWorkFlowTaskDefinition(WorkFlowTaskDefinition wdt) {
-		return WorkDefinitionResponseDTO.builder().id(wdt.getId()).workType(WorkType.TASK).name(wdt.getName())
-				.parameterFromString(wdt.getParameters())
+		WorkDefinitionResponseDTOBuilder builder = WorkDefinitionResponseDTO.builder().id(wdt.getId())
+				.workType(WorkType.TASK).name(wdt.getName()).parameterFromString(wdt.getParameters())
 				.outputs(WorkFlowDTOUtil.readStringAsObject(wdt.getOutputs(), new TypeReference<>() {
-				}, List.of())).build();
+				}, List.of())).numberOfWorkUnits(0);
+
+		if (wdt.getWorkFlowCheckerMappingDefinition() != null) {
+			builder = builder.workFlowCheckerMappingDefinitionId(wdt.getWorkFlowCheckerMappingDefinition().getId());
+		}
+
+		return builder.build();
+	}
+
+	public static WorkDefinitionResponseDTO fromWorkFlowCheckerMappingDefinition(WorkFlowCheckerMappingDefinition wcd) {
+		return WorkDefinitionResponseDTO.builder().id(wcd.getCheckWorkFlow().getId())
+				.name(wcd.getCheckWorkFlow().getName()).parameterFromString(wcd.getCheckWorkFlow().getParameters())
+				.processingType(wcd.getCheckWorkFlow().getProcessingType()).workType(WorkType.CHECKER)
+				.numberOfWorkUnits(wcd.getCheckWorkFlow().getNumberOfWorks()).cronExpression(wcd.getCronExpression())
+				.build();
 	}
 
 }

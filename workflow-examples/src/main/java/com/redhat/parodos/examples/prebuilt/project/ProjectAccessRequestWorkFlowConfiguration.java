@@ -3,6 +3,7 @@ package com.redhat.parodos.examples.prebuilt.project;
 import java.util.Date;
 import java.util.List;
 
+import com.redhat.parodos.infrastructure.Notifier;
 import com.redhat.parodos.tasks.project.ProjectAccessRequestApprovalWorkFlowTask;
 import com.redhat.parodos.tasks.project.ProjectAccessRequestWorkFlowTask;
 import com.redhat.parodos.tasks.project.checker.ProjectAccessRequestApprovalWorkFlowCheckerTask;
@@ -25,13 +26,8 @@ public class ProjectAccessRequestWorkFlowConfiguration {
 
 	@Bean
 	ProjectAccessRequestEscalationWorkFlowTask projectAccessRequestEscalationWorkFlowTask(
-			@Value("${SERVICE_URL:localhost}") String serviceUrl, @Value("${SERVICE_PORT:8080}") String servicePort,
-			@Value("${NOTIFICATION_SERVICE_URL:localhost}") String notificationServiceUrl,
-			@Value("${NOTIFICATION_SERVICE_PORT:8081}") String notificationServicePort,
-			@Value("${NOTIFICATION_SERVICE_ACCOUNT_NAME:test}") String notificationServiceAccountName,
-			@Value("${NOTIFICATION_SERVICE_ACCOUNT_PASSWORD:test}") String notificationServiceAccountPassword) {
-		return new ProjectAccessRequestEscalationWorkFlowTask(serviceUrl, servicePort, notificationServiceUrl,
-				notificationServicePort, notificationServiceAccountName, notificationServiceAccountPassword);
+			@Value("${SERVICE_URL:http://localhost:8080}") String serviceUrl, Notifier notifier) {
+		return new ProjectAccessRequestEscalationWorkFlowTask(serviceUrl, notifier);
 	}
 
 	@Bean(name = "projectAccessRequestEscalationWorkFlow")
@@ -45,11 +41,11 @@ public class ProjectAccessRequestWorkFlowConfiguration {
 	@Bean
 	ProjectAccessRequestApprovalWorkFlowCheckerTask projectAccessRequestApprovalWorkFlowCheckerTask(
 			@Qualifier("projectAccessRequestEscalationWorkFlow") WorkFlow projectAccessRequestEscalationWorkFlow,
-			@Value("${SERVICE_URL:localhost}") String serviceUrl, @Value("${SERVICE_PORT:8080}") String servicePort,
-			@Value("${SERVICE_ACCOUNT_NAME:test}") String serviceAccountName,
-			@Value("${SERVICE_ACCOUNT_PASSWORD:test}") String serviceAccountPassword) {
+			@Value("${SERVICE_URL:http://localhost:8080}") String serviceUrl,
+			@Value("${SERVICE_USERNAME:test}") String serviceUsername,
+			@Value("${SERVICE_PASSWORD:test}") String servicePassword) {
 		return new ProjectAccessRequestApprovalWorkFlowCheckerTask(projectAccessRequestEscalationWorkFlow,
-				new Date().getTime() / 1000 + 30, serviceUrl, servicePort, serviceAccountName, serviceAccountPassword);
+				new Date().getTime() / 1000 + 30, serviceUrl, serviceUsername, servicePassword);
 	}
 
 	@Bean(name = "projectAccessRequestApprovalWorkFlowChecker")
@@ -62,24 +58,18 @@ public class ProjectAccessRequestWorkFlowConfiguration {
 
 	@Bean
 	ProjectAccessRequestWorkFlowTask projectAccessRequestWorkFlowTask(
-			@Value("${SERVICE_URL:localhost}") String serviceUrl, @Value("${SERVICE_PORT:8080}") String servicePort,
-			@Value("${SERVICE_ACCOUNT_NAME:test}") String serviceAccountName,
-			@Value("${SERVICE_ACCOUNT_PASSWORD:test}") String serviceAccountPassword) {
-		return new ProjectAccessRequestWorkFlowTask(serviceUrl, servicePort, serviceAccountName,
-				serviceAccountPassword);
+			@Value("${SERVICE_URL:http://localhost:8080}") String serviceUrl,
+			@Value("${SERVICE_USERNAME:test}") String serviceUsername,
+			@Value("${SERVICE_PASSWORD:test}") String servicePassword) {
+		return new ProjectAccessRequestWorkFlowTask(serviceUrl, serviceUsername, servicePassword);
 	}
 
 	@Bean
 	ProjectAccessRequestApprovalWorkFlowTask projectAccessRequestApprovalWorkFlowTask(
-			@Qualifier("projectAccessRequestApprovalWorkFlowChecker") WorkFlow projectAccessRequestApprovalWorkFlowChecker,
-			@Value("${SERVICE_URL:localhost}") String serviceUrl, @Value("${SERVICE_PORT:8080}") String servicePort,
-			@Value("${NOTIFICATION_SERVICE_URL:localhost}") String notificationServiceUrl,
-			@Value("${NOTIFICATION_SERVICE_PORT:8081}") String notificationServicePort,
-			@Value("${NOTIFICATION_SERVICE_ACCOUNT_NAME:test}") String notificationServiceAccountName,
-			@Value("${NOTIFICATION_SERVICE_ACCOUNT_PASSWORD:test}") String notificationServiceAccountPassword) {
+			@Value("${SERVICE_URL:http://localhost:8080}") String serviceUrl, Notifier notifier,
+			@Qualifier("projectAccessRequestApprovalWorkFlowChecker") WorkFlow projectAccessRequestApprovalWorkFlowChecker) {
 		ProjectAccessRequestApprovalWorkFlowTask projectAccessRequestApprovalWorkFlowTask = new ProjectAccessRequestApprovalWorkFlowTask(
-				serviceUrl, servicePort, notificationServiceUrl, notificationServicePort,
-				notificationServiceAccountName, notificationServiceAccountPassword);
+				serviceUrl, notifier);
 		projectAccessRequestApprovalWorkFlowTask
 				.setWorkFlowCheckers(List.of(projectAccessRequestApprovalWorkFlowChecker));
 		return projectAccessRequestApprovalWorkFlowTask;

@@ -8,13 +8,15 @@
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
 |**author** | **String** |  |  [optional] |
+|**cronExpression** | **String** |  |  [optional] |
 |**id** | **UUID** |  |  [optional] |
 |**name** | **String** |  |  [optional] |
 |**outputs** | [**List&lt;OutputsEnum&gt;**](#List&lt;OutputsEnum&gt;) |  |  [optional] |
 |**parameters** | **Map&lt;String, Map&lt;String, Object&gt;&gt;** |  |  [optional] |
 |**processingType** | [**ProcessingTypeEnum**](#ProcessingTypeEnum) |  |  [optional] |
+|**workFlowCheckerMappingDefinitionId** | **UUID** |  |  [optional] |
 |**workType** | [**WorkTypeEnum**](#WorkTypeEnum) |  |  [optional] |
-|**works** | [**List&lt;WorkDefinitionResponseDTO&gt;**](WorkDefinitionResponseDTO.md) |  |  [optional] |
+|**works** | [**Set&lt;WorkDefinitionResponseDTO&gt;**](WorkDefinitionResponseDTO.md) |  |  [optional] |
 
 
 
@@ -45,6 +47,7 @@
 |---- | -----|
 | TASK | &quot;TASK&quot; |
 | WORKFLOW | &quot;WORKFLOW&quot; |
+| CHECKER | &quot;CHECKER&quot; |
 
 
 
